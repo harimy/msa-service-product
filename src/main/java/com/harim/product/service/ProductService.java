@@ -19,9 +19,19 @@ public class ProductService {
     @Transactional
     public Long addProduct(Product product)
     {
+        validateDuplicateProduct(product); // 중복 상품 검증
         productRepository.add(product);
-
         return product.getId();
+    }
+
+    private void validateDuplicateProduct(Product product)
+    {
+        // Exception
+        List<Product> findProducts = productRepository.findByName(product.getName());
+        if(!findProducts.isEmpty())
+        {
+            throw new IllegalStateException("이미 등록된 상품입니다.");
+        }
     }
 
     // 상품 수정

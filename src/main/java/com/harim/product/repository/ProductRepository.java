@@ -29,6 +29,13 @@ public class ProductRepository {
                 .getResultList();
     }
 
+    public List<Product> findByName(String name)
+    {
+        return em.createQuery("select p from Product p where p.name = :name", Product.class)
+                .setParameter("name", name)
+                .getResultList();
+    }
+
     public void delete(Long productId) {
         Product product = em.find(Product.class, productId);
         em.remove(product);
