@@ -57,11 +57,4 @@ public class ProductService {
         return productRepository.findById(productId);
     }
 
-    // 상품 목록 조회
-    public List<Product> getAllProducts()
-    {
-        return productRepository.findAll();
-    }
-
-
 }

@@ -23,16 +23,19 @@ public class ProductRepository {
         return em.find(Product.class, id);
     }
 
-    public List<Product> findAll()
-    {
-        return em.createQuery("select p from Product p", Product.class)
-                .getResultList();
-    }
 
     public List<Product> findByName(String name)
     {
         return em.createQuery("select p from Product p where p.name = :name", Product.class)
                 .setParameter("name", name)
+                .getResultList();
+    }
+
+    public List<Product> findByPagination(int page, int size)
+    {
+        return em.createQuery("select p from Product p order by p.id ", Product.class)
+                .setFirstResult((page-1) * size)
+                .setMaxResults(size)
                 .getResultList();
     }
 

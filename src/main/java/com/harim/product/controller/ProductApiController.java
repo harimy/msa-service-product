@@ -2,6 +2,7 @@ package com.harim.product.controller;
 
 import com.harim.product.domain.Product;
 import com.harim.product.dto.*;
+import com.harim.product.repository.ProductRepository;
 import com.harim.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
 public class ProductApiController {
 
     private final ProductService productService;
+    private final ProductRepository productRepository;
 
     // GET - getProduct : id로 조회
     @GetMapping("/api/product/{id}")
@@ -28,18 +30,18 @@ public class ProductApiController {
     }
 
     // GET - getProducts : 전체 목록 조회
+    // GET - getProductByPagination : 페이지 조회
     @GetMapping("/api/product")
-    public GetProductResponse getAllProducts()
+    public GetProductResponse getAllProducts(@RequestParam(value = "page", defaultValue = "1") int offset
+                                            , @RequestParam(value = "size", defaultValue = "100") int size)
     {
-        List<Product> findProducts = productService.getAllProducts();
+        List<Product> findProducts = productRepository.findByPagination(offset, size);
         List<ProductDto> collect = findProducts.stream()
                 .map(p -> new ProductDto(p.getName(), p.getPrice(), p.getStockQuantity()))
                 .collect(Collectors.toList());
 
         return new GetProductResponse(collect);
     }
-
-    // getProductByPagination 추가 예정
 
     // POST - addProduct
     @PostMapping("/api/product")
