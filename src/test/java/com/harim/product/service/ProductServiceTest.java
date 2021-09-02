@@ -28,7 +28,8 @@ public class ProductServiceTest {
     {
         // given
         Product product = new Product();
-        product.setName("product1");
+        product.setName("product1");    // Not Empty
+        product.setStockQuantity(0);    // stockQuantity >= 0
 
         // when
         Long saveId = productService.addProduct(product);

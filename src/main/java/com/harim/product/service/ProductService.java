@@ -20,6 +20,7 @@ public class ProductService {
     public Long addProduct(Product product)
     {
         validateDuplicateProduct(product); // 중복 상품 검증
+        validateStockQuantity(product); // 재고 수량 검증
         productRepository.add(product);
         return product.getId();
     }
@@ -32,6 +33,12 @@ public class ProductService {
         {
             throw new IllegalStateException("이미 등록된 상품입니다.");
         }
+    }
+
+    private void validateStockQuantity(Product product)
+    {
+        if(product.getStockQuantity() < 0)
+            throw new IllegalStateException("재고수량은 0보다 크거나 같아야 합니다.");
     }
 
     // 상품 수정
