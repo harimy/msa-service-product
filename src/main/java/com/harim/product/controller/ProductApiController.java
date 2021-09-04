@@ -31,7 +31,7 @@ public class ProductApiController {
 
     // GET - getProducts : 전체 목록 조회
     // GET - getProductByPagination : 페이지 조회
-    @GetMapping("/api/product")
+    @GetMapping("/api/products")
     public GetProductResponse getAllProducts(@RequestParam(value = "page", defaultValue = "1") int offset
                                             , @RequestParam(value = "size", defaultValue = "100") int size)
     {
