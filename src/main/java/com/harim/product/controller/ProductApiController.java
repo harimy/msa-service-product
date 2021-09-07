@@ -26,7 +26,7 @@ public class ProductApiController {
     {
         Product product = productService.getProduct(id);
 
-        return new ProductDto(product.getName(), product.getPrice(), product.getStockQuantity());
+        return new ProductDto(product.getId(), product.getName(), product.getPrice(), product.getStockQuantity());
     }
 
     // GET - getProducts : 전체 목록 조회
@@ -37,7 +37,7 @@ public class ProductApiController {
     {
         List<Product> findProducts = productRepository.findByPagination(offset, size);
         List<ProductDto> collect = findProducts.stream()
-                .map(p -> new ProductDto(p.getName(), p.getPrice(), p.getStockQuantity()))
+                .map(p -> new ProductDto(p.getId(), p.getName(), p.getPrice(), p.getStockQuantity()))
                 .collect(Collectors.toList());
 
         return new GetProductResponse(collect);
