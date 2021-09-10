@@ -2,9 +2,14 @@ package com.harim.product.controller;
 
 import com.harim.product.domain.Product;
 import com.harim.product.dto.*;
+import com.harim.product.exception.DuplicateProductException;
+import com.harim.product.exception.ProductNotFoundException;
+import com.harim.product.exception.StockQuantityException;
 import com.harim.product.repository.ProductRepository;
 import com.harim.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +30,9 @@ public class ProductApiController {
     public ProductDto getProduct(@PathVariable("id") Long id)
     {
         Product product = productService.getProduct(id);
+        if(product==null){
+            throw new ProductNotFoundException();
+        }
 
         return new ProductDto(product.getId(), product.getName(), product.getPrice(), product.getStockQuantity());
     }
@@ -60,8 +68,14 @@ public class ProductApiController {
     @PutMapping("api/product/{id}")
     public UpdateProductResponse updateProductResponse(@PathVariable("id") Long id, @RequestBody @Valid UpdateProductRequest request)
     {
-        productService.updateProduct(id, request.getName(), request.getPrice(), request.getStockQuantity());
         Product findProduct = productService.getProduct(id);
+        if(findProduct==null){
+            throw new ProductNotFoundException();
+        }
+
+        productService.updateProduct(id, request.getName(), request.getPrice(), request.getStockQuantity());
+        findProduct = productService.getProduct(id);
+
         return new UpdateProductResponse(findProduct.getId(), findProduct.getName(), findProduct.getPrice(), findProduct.getStockQuantity());
     }
 
@@ -69,10 +83,33 @@ public class ProductApiController {
     @DeleteMapping("api/product/{id}")
     public DeleteProductResponse deleteProductResponse(@PathVariable("id") Long id)
     {
-        productService.deleteProduct(id);
+        Product findProduct = productService.getProduct(id);
+        if (findProduct==null){
+            throw new ProductNotFoundException();
+        }
 
+        productService.deleteProduct(id);
         return new DeleteProductResponse(id);
     }
 
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ProductNotFoundException> handleNoData(){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ProductNotFoundException("상품이 존재하지 않습니다."));
+    }
 
+    @ExceptionHandler(StockQuantityException.class)
+    public ResponseEntity<StockQuantityException> handleNotEnoughStockQuantity(){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new StockQuantityException("재고 수량이 충분하지 않습니다."));
+    }
+
+    @ExceptionHandler(DuplicateProductException.class)
+    public ResponseEntity<DuplicateProductException> handleDuplicateProduct(){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new DuplicateProductException("이미 등록된 상품입니다."));
+    }
 }

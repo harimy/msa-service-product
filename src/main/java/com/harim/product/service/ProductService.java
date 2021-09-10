@@ -1,6 +1,9 @@
 package com.harim.product.service;
 
 import com.harim.product.domain.Product;
+import com.harim.product.exception.DuplicateProductException;
+import com.harim.product.exception.ProductNotFoundException;
+import com.harim.product.exception.StockQuantityException;
 import com.harim.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,14 +34,14 @@ public class ProductService {
         List<Product> findProducts = productRepository.findByName(product.getName());
         if(!findProducts.isEmpty())
         {
-            throw new IllegalStateException("이미 등록된 상품입니다.");
+            throw new DuplicateProductException();
         }
     }
 
     private void validateStockQuantity(Product product)
     {
         if(product.getStockQuantity() < 0)
-            throw new IllegalStateException("재고수량은 0보다 크거나 같아야 합니다.");
+            throw new StockQuantityException();
     }
 
     // 상품 수정
@@ -49,6 +52,7 @@ public class ProductService {
         findProduct.setName(name);
         findProduct.setPrice(price);
         findProduct.setStockQuantity(stockQuantity);
+        validateStockQuantity(findProduct);     // 재고 수량 검증
     }
 
     // 상품 삭제
@@ -61,7 +65,9 @@ public class ProductService {
     // 상품 id 조회
     public Product getProduct(Long productId)
     {
-        return productRepository.findById(productId);
+        Product findProduct = productRepository.findById(productId);
+
+        return findProduct;
     }
 
 }
