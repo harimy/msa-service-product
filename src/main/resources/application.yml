@@ -1,4 +1,10 @@
+Server:
+  port: 8080
+
 Spring:
+  application:
+    name: product-service
+
   datasource:
     url: jdbc:h2:tcp://localhost/~/product
     username: sa
@@ -11,6 +17,17 @@ Spring:
     properties:
       hibernate:
         format_sql: true
+
+eureka:
+  instance:
+    instance-id: product-microservice-instance
+
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
 
 logging.level:
   org.hibernate.SQL: debug
